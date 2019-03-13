@@ -1,14 +1,11 @@
-import React from 'react'
-import { graphql } from 'gatsby'
+import React from "react"
+import { graphql } from "gatsby"
 
-import Layout from '../components/layout'
-import PostList from '../components/post-list'
-import Pagination from '../components/pagination'
+import Layout from "../components/layout"
+import PostList from "../components/post-list"
+import Pagination from "../components/pagination"
 
-const Posts = ({
-  pathContext,
-  ...props
-}) => (
+const Posts = ({ pathContext, ...props }) => (
   <Layout>
     <PostList {...props} />
     <Pagination {...pathContext} />
@@ -22,16 +19,8 @@ export const pageQuery = graphql`
     allMdx(
       limit: $limit
       skip: $skip
-      sort: {
-        fields: [frontmatter___date]
-        order: DESC
-      }
-      filter: {
-        frontmatter: {
-          draft: { ne: true }
-          archived: { ne: true }
-        }
-      }
+      sort: { fields: [frontmatter___date], order: DESC }
+      filter: { frontmatter: { draft: { ne: true }, archived: { ne: true } } }
     ) {
       edges {
         node {

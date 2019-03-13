@@ -1,36 +1,25 @@
-const fs = require('fs')
-const path = require('path')
-const mkdirp = require('mkdirp')
-const kebab = require('lodash.kebabcase')
+const fs = require(`fs`)
+const path = require(`path`)
+const mkdirp = require(`mkdirp`)
+const kebab = require(`lodash.kebabcase`)
 const Debug = require(`debug`)
 
-const Posts = require.resolve('./src/templates/posts')
-const Post = require.resolve('./src/templates/post')
-const Tag = require.resolve('./src/templates/tag')
+const Posts = require.resolve(`./src/templates/posts`)
+const Post = require.resolve(`./src/templates/post`)
+const Tag = require.resolve(`./src/templates/tag`)
 
 const debug = Debug(`gatsby-theme-blog-mdx`)
 
 exports.createPages = async ({ graphql, actions }, pluginOptions) => {
   const { createPage, createRedirect } = actions
 
-  const {
-    postsPath = '/blog',
-    postsPerPage = 9999
-  } = pluginOptions
+  const { postsPath = `/blog`, postsPerPage = 9999 } = pluginOptions
 
   const result = await graphql(`
     {
       mdxPages: allMdx(
-        sort: {
-          fields: [frontmatter___date]
-          order: DESC
-        }
-        filter: {
-          frontmatter: {
-            draft: { ne: true }
-            archived: { ne: true }
-          }
-        }
+        sort: { fields: [frontmatter___date], order: DESC }
+        filter: { frontmatter: { draft: { ne: true }, archived: { ne: true } } }
       ) {
         edges {
           node {
@@ -65,21 +54,25 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
 
   if (result.errors) {
     console.log(result.errors)
-    throw new Error('Could not query posts', result.errors)
+    throw new Error(`Could not query posts`, result.errors)
   }
 
   const { mdxPages } = result.data
 
   // Collect tags
   const allTags = mdxPages.edges.reduce((acc, post) => {
-    const { node: { frontmatter = {} } } = post
+    const {
+      node: { frontmatter = {} },
+    } = post
     return acc.concat(frontmatter.tags || [])
   }, [])
   const tags = [...new Set(allTags)]
 
   // Create post pages and redirects
   mdxPages.edges.forEach(({ node }) => {
-    const fallbackPath = `/${node.parent.sourceInstanceName}/${node.parent.name}`
+    const fallbackPath = `/${node.parent.sourceInstanceName}/${
+      node.parent.name
+    }`
     const path = node.frontmatter.path || fallbackPath
 
     if (node.frontmatter.redirects) {
@@ -88,7 +81,7 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
           fromPath,
           toPath: path,
           redirectInBrowser: true,
-          isPermanent: true
+          isPermanent: true,
         })
       })
     }
@@ -96,7 +89,7 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
     createPage({
       path,
       context: node,
-      component: Post
+      component: Post,
     })
   })
 
@@ -112,9 +105,9 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
     const isLast = currentPage === numPages
 
     const nextPage = isLast ? null : `${postsPath}/${currentPage + 1}`
-    const prevPage = isFirst ? null : `${postsPath}/${
-      currentPage - 1 === 1 ? '' : currentPage - 1
-    }`
+    const prevPage = isFirst
+      ? null
+      : `${postsPath}/${currentPage - 1 === 1 ? `` : currentPage - 1}`
 
     createPage({
       path: isFirst ? postsPath : `${postsPath}/${currentPage}`,
@@ -126,8 +119,8 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
         isFirst,
         isLast,
         nextPage,
-        prevPage
-      }
+        prevPage,
+      },
     })
   })
 
@@ -138,8 +131,8 @@ exports.createPages = async ({ graphql, actions }, pluginOptions) => {
       path,
       component: Tag,
       context: {
-        tag
-      }
+        tag,
+      },
     })
   })
 }
@@ -148,9 +141,9 @@ exports.onPreBootstrap = ({ store }) => {
   const { program } = store.getState()
 
   const dirs = [
-    path.join(program.directory, 'posts'),
-    path.join(program.directory, 'src/pages'),
-    path.join(program.directory, 'src/data')
+    path.join(program.directory, `posts`),
+    path.join(program.directory, `src/pages`),
+    path.join(program.directory, `src/data`),
   ]
 
   dirs.forEach(dir => {
@@ -167,10 +160,10 @@ exports.onCreateWebpackConfig = ({ loaders, actions }) => {
       rules: [
         {
           test: /\.js$/,
-          include: path.dirname(require.resolve('gatsby-theme-blog-base')),
-          use: [loaders.js()]
-        }
-      ]
-    }
+          include: path.dirname(require.resolve(`gatsby-theme-blog-mdx`)),
+          use: [loaders.js()],
+        },
+      ],
+    },
   })
 }

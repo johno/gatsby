@@ -1,15 +1,12 @@
-import React from 'react'
-import { Link } from 'gatsby'
+import React from "react"
+import { Link } from "gatsby"
 
 export const toPath = ({ frontmatter, parent = {} }) => {
   if (frontmatter.path) {
     return frontmatter.path
   }
 
-  return [
-    parent.sourceInstanceName,
-    parent.name
-  ].join('/')
+  return [parent.sourceInstanceName, parent.name].join(`/`)
 }
 
 const PostLink = ({ post }) => {

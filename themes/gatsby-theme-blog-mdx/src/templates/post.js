@@ -1,7 +1,7 @@
-import React from 'react'
-import { graphql } from 'gatsby'
+import React from "react"
+import { graphql } from "gatsby"
 
-import Post from '../components/post'
+import Post from "../components/post"
 
 export default props => <Post {...props} />
 

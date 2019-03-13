@@ -1,59 +1,59 @@
-const path = require('path')
+const path = require(`path`)
 
 module.exports = ({ defaultLayouts = {} } = {}) => {
   const themeLayouts = {
-    posts: require.resolve('./src/templates/post'),
-    default: require.resolve('./src/components/layout')
+    posts: require.resolve(`./src/templates/post`),
+    default: require.resolve(`./src/components/layout`),
   }
 
   return {
     siteMetadata: {
-      title: 'Gatsby MDX Blog',
-      siteUrl: 'https://gatsbyjs.org'
+      title: `Gatsby MDX Blog`,
+      siteUrl: `https://gatsbyjs.org`,
     },
     mapping: {
-      'Mdx.frontmatter.author': 'AuthorYaml'
+      "Mdx.frontmatter.author": `AuthorYaml`,
     },
     plugins: [
       {
-        resolve: 'gatsby-mdx',
+        resolve: `gatsby-mdx`,
         options: {
           defaultLayouts: {
             ...themeLayouts,
-            ...defaultLayouts
-          }
-        }
+            ...defaultLayouts,
+          },
+        },
       },
       {
-        resolve: 'gatsby-source-filesystem',
+        resolve: `gatsby-source-filesystem`,
         options: {
-          path: 'posts',
-          name: 'posts'
-        }
+          path: `posts`,
+          name: `posts`,
+        },
       },
       {
-        resolve: 'gatsby-source-filesystem',
+        resolve: `gatsby-source-filesystem`,
         options: {
-          path: path.join(__dirname, 'posts')
-        }
+          path: path.join(__dirname, `posts`),
+        },
       },
       {
         // This will eventually be default
-        resolve: 'gatsby-plugin-page-creator',
+        resolve: `gatsby-plugin-page-creator`,
         options: {
-          path: path.join(__dirname, 'src', 'pages')
-        }
-      },
-      {
-        resolve: 'gatsby-source-filesystem',
-        options: {
-          name: 'data',
-          path: 'data',
-          ignore: ['**/\.*']
+          path: path.join(__dirname, `src`, `pages`),
         },
       },
-      'gatsby-transformer-yaml',
-      'gatsby-plugin-meta-redirect'
-    ]
+      {
+        resolve: `gatsby-source-filesystem`,
+        options: {
+          name: `data`,
+          path: path.join(`src`, `data`),
+          ignore: [`**/\.*`],
+        },
+      },
+      `gatsby-transformer-yaml`,
+      `gatsby-plugin-meta-redirect`,
+    ],
   }
 }

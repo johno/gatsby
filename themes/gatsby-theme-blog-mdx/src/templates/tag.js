@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link, graphql } from 'gatsby'
+import React from "react"
+import { Link, graphql } from "gatsby"
 
-import PostList from '../PostList'
+import PostList from "../PostList"
 
 const TagPageLayout = props => (
   <>
@@ -15,16 +15,8 @@ export default TagPageLayout
 export const pageQuery = graphql`
   query TagPage($tag: String) {
     allMdx(
-      sort: {
-        fields: [frontmatter___date],
-        order: DESC
-      }
-      filter: {
-        frontmatter: {
-        	tags: { in: [$tag] }
-          draft: { ne: true }
-        }
-      }
+      sort: { fields: [frontmatter___date], order: DESC }
+      filter: { frontmatter: { tags: { in: [$tag] }, draft: { ne: true } } }
     ) {
       edges {
         node {

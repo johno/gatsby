@@ -1,9 +1,11 @@
-import React from 'react'
+import React from "react"
 
-import TagLink from './tag-link'
+import TagLink from "./tag-link"
 
 const TagList = ({ data }) => {
-  const { allMdx: { group: tags } } = data
+  const {
+    allMdx: { group: tags },
+  } = data
 
   return (
     <>

@@ -1,9 +1,11 @@
-import React from 'react'
+import React from "react"
 
-import PostLink from './post-link'
+import PostLink from "./post-link"
 
 const PostList = ({ data }) => {
-  const { allMdx: { edges: posts } } = data
+  const {
+    allMdx: { edges: posts },
+  } = data
 
   return (
     <>
