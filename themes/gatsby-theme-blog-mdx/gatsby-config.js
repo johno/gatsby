@@ -49,7 +49,7 @@ module.exports = ({ defaultLayouts = {} } = {}) => {
         options: {
           name: `data`,
           path: path.join(`src`, `data`),
-          ignore: [`**/\.*`],
+          ignore: [`**/.*`],
         },
       },
       `gatsby-transformer-yaml`,
