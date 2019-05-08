@@ -2,6 +2,9 @@ import { reportError, clearError } from "./error-overlay-handler"
 
 let socket = null
 
+// XXX: Temporary hack to expose the websocket
+window.___socket = socket
+
 let staticQueryData = {}
 let pageQueryData = {}
 let isInitialized = false

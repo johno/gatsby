@@ -189,6 +189,10 @@ class WebsocketManager {
       s.on(`unregisterPath`, path => {
         leaveRoom(path)
       })
+
+      s.on(`writeFile`, (path, content) => {
+        fs.writeFileSync(path, content)
+      })
     })
 
     this.isInitialised = true
