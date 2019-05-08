@@ -191,6 +191,7 @@ class WebsocketManager {
       })
 
       s.on(`writeFile`, (path, content) => {
+        console.log(`Writing ${path}`)
         fs.writeFileSync(path, content)
       })
     })
