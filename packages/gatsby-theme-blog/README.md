@@ -60,12 +60,13 @@ module.exports = {
 
 ### Theme options
 
-| Key                      | Default value    | Description                                                                      |
-| ------------------------ | ---------------- | -------------------------------------------------------------------------------- |
-| `basePath`               | `/`              | Root url for all blog posts                                                      |
-| `contentPath`            | `content/posts`  | Location of blog posts                                                           |
-| `assetPath`              | `content/assets` | Location of assets                                                               |
-| `mdxOtherwiseConfigured` | `false`          | Set this flag `true` if `gatsby-plugin-mdx` is already configured for your site. |
+| Key                      | Default value    | Description                                                                        |
+| ------------------------ | ---------------- | ---------------------------------------------------------------------------------- |
+| `basePath`               | `/`              | Root url for all blog posts                                                        |
+| `contentPath`            | `content/posts`  | Location of blog posts                                                             |
+| `assetPath`              | `content/assets` | Location of assets                                                                 |
+| `mdxOtherwiseConfigured` | `false`          | Set this flag `true` if `gatsby-plugin-mdx` is already configured for your site.   |
+| `useThemeUI`             | `true`           | Set this flag to `false` if you want to turn [Theme UI](https://theme-ui.com) off. |
 
 #### Example configuration
 
