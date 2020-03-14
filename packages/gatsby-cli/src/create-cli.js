@@ -293,6 +293,20 @@ function buildLocalCommands(cli, isLocalSite) {
       return cmd(args)
     }),
   })
+
+  cli.command({
+    command: `shadow`,
+    desc: `Shadow a file`,
+    builder: _ =>
+      _.option(`list`, {
+        type: `string`,
+        describe: `List out the shadowable files for a theme`,
+      }).option(`debug`, {
+        type: `boolean`,
+        describe: `Check for misspelled files in shadow directories`,
+      }),
+    handler: getCommandHandler(`shadow`),
+  })
 }
 
 function isLocalGatsbySite() {
