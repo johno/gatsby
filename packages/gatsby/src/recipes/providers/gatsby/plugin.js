@@ -1,9 +1,42 @@
 const fs = require(`fs-extra`)
 const path = require(`path`)
 const babel = require(`@babel/core`)
+const generate = require(`@babel/generator`).default
+const t = require(`@babel/types`)
 const Joi = require(`@hapi/joi`)
 
 const declare = require(`@babel/helper-plugin-utils`).declare
+
+const unwrapTemplateLiterals = str =>
+  str
+    .trim()
+    .replace(/^`/, ``)
+    .replace(/`$/, ``)
+
+const getElementProps = ({ value: v }) => {
+  const props = v.properties.reduce((acc, curr) => {
+    let value = null
+
+    if (curr.value) {
+      value = getValueFromLiteral(curr)
+    } else if (t.isObjectExpression(curr.value)) {
+      value = curr.value.expression.properties.reduce((acc, curr) => {
+        acc[curr.key.name] = getElementProps(curr)
+        return acc
+      }, {})
+    } else {
+      throw new Error(`Did not recognize ${curr}`)
+    }
+
+    if (value === null) {
+      console.log(v)
+    }
+    acc[curr.key.name] = value
+    return acc
+  }, {})
+
+  return props
+}
 
 const isDefaultExport = node => {
   if (!node || node.type !== `MemberExpression`) {
@@ -25,7 +58,10 @@ const getValueFromLiteral = node => {
   }
 
   if (node.type === `TemplateLiteral`) {
-    return node.quasis[0].value.raw
+    // Handle comments before literals that can get gobbled up in the
+    // code generator to make serialization simpler.
+    delete node.leadingComments
+    return generate(node).code
   }
 
   return null
@@ -42,6 +78,23 @@ const getNameForPlugin = node => {
   }
 
   return null
+}
+
+const getOptionsForPlugin = node => {
+  if (node.type !== `ObjectExpression`) {
+    return {}
+  }
+
+  return getElementProps(
+    node.properties.find(property => property.key.name === `options`)
+  )
+}
+
+const getPlugin = node => {
+  return {
+    name: getNameForPlugin(node),
+    options: getOptionsForPlugin(node),
+  }
 }
 
 const addPluginToConfig = (src, pluginName) => {
@@ -82,10 +135,12 @@ const read = async ({ root }, id) => {
   const configPath = path.join(root, `gatsby-config.js`)
   const configSrc = await fs.readFile(configPath, `utf8`)
 
-  const name = getPluginsFromConfig(configSrc).find(name => name === id)
+  const plugin = getPluginsFromConfig(configSrc).find(
+    plugin => plugin.name === id
+  )
 
-  if (name) {
-    return { id, name }
+  if (plugin) {
+    return { ...plugin, id: plugin.name }
   } else {
     return undefined
   }
@@ -165,7 +220,7 @@ class BabelPluginGetPluginsFromGatsbyConfig {
             const plugins = right.properties.find(p => p.key.name === `plugins`)
 
             plugins.value.elements.map(node => {
-              this.state.push(getNameForPlugin(node))
+              this.state.push(getPlugin(node))
             })
           },
         },
@@ -188,10 +243,10 @@ module.exports.all = async ({ root }) => {
   const plugins = getPluginsFromConfig(src)
 
   // TODO: Consider mapping to read function
-  return plugins.map(name => {
+  return plugins.map(plugin => {
     return {
-      id: name,
-      name,
+      ...plugin,
+      id: plugin.name,
     }
   })
 }
@@ -199,6 +254,7 @@ module.exports.all = async ({ root }) => {
 module.exports.validate = () => {
   return {
     name: Joi.string(),
+    options: Joi.object(),
   }
 }
 

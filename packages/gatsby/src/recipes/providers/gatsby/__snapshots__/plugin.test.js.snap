@@ -3,44 +3,71 @@
 exports[`gatsby-plugin resource all returns an array of plugins 1`] = `
 Array [
   Object {
-    "id": "gatsby-source-filesystem",
-    "name": "gatsby-source-filesystem",
+    "id": "\`gatsby-source-filesystem\`",
+    "name": "\`gatsby-source-filesystem\`",
+    "options": Object {
+      "name": null,
+      "path": null,
+    },
   },
   Object {
-    "id": "gatsby-transformer-sharp",
-    "name": "gatsby-transformer-sharp",
+    "id": "\`gatsby-transformer-sharp\`",
+    "name": "\`gatsby-transformer-sharp\`",
+    "options": Object {},
   },
   Object {
-    "id": "gatsby-plugin-emotion",
-    "name": "gatsby-plugin-emotion",
+    "id": "\`gatsby-plugin-emotion\`",
+    "name": "\`gatsby-plugin-emotion\`",
+    "options": Object {},
   },
   Object {
-    "id": "gatsby-plugin-typography",
-    "name": "gatsby-plugin-typography",
+    "id": "\`gatsby-plugin-typography\`",
+    "name": "\`gatsby-plugin-typography\`",
+    "options": Object {
+      "pathToConfigModule": null,
+    },
   },
   Object {
-    "id": "gatsby-transformer-remark",
-    "name": "gatsby-transformer-remark",
+    "id": "\`gatsby-transformer-remark\`",
+    "name": "\`gatsby-transformer-remark\`",
+    "options": Object {
+      "plugins": null,
+    },
   },
   Object {
-    "id": "gatsby-plugin-sharp",
-    "name": "gatsby-plugin-sharp",
+    "id": "\`gatsby-plugin-sharp\`",
+    "name": "\`gatsby-plugin-sharp\`",
+    "options": Object {},
   },
   Object {
-    "id": "gatsby-plugin-google-analytics",
-    "name": "gatsby-plugin-google-analytics",
+    "id": "\`gatsby-plugin-google-analytics\`",
+    "name": "\`gatsby-plugin-google-analytics\`",
+    "options": Object {
+      "trackingId": null,
+    },
   },
   Object {
-    "id": "gatsby-plugin-manifest",
-    "name": "gatsby-plugin-manifest",
+    "id": "\`gatsby-plugin-manifest\`",
+    "name": "\`gatsby-plugin-manifest\`",
+    "options": Object {
+      "background_color": null,
+      "display": null,
+      "icon": null,
+      "name": null,
+      "short_name": null,
+      "start_url": null,
+      "theme_color": null,
+    },
   },
   Object {
-    "id": "gatsby-plugin-offline",
-    "name": "gatsby-plugin-offline",
+    "id": "\`gatsby-plugin-offline\`",
+    "name": "\`gatsby-plugin-offline\`",
+    "options": Object {},
   },
   Object {
-    "id": "gatsby-plugin-react-helmet",
-    "name": "gatsby-plugin-react-helmet",
+    "id": "\`gatsby-plugin-react-helmet\`",
+    "name": "\`gatsby-plugin-react-helmet\`",
+    "options": Object {},
   },
 ]
 `;
@@ -49,80 +76,63 @@ exports[`gatsby-plugin resource e2e plugin resource test: GatsbyPlugin create 1`
 Object {
   "id": "gatsby-plugin-foo",
   "name": "gatsby-plugin-foo",
+  "options": Object {},
 }
 `;
 
 exports[`gatsby-plugin resource e2e plugin resource test: GatsbyPlugin create plan 1`] = `
 Object {
-  "currentState": "const redish = \`#c5484d\`
+  "currentState": "const redish = \`#c5484d\`;
 module.exports = {
   siteMetadata: {
     title: \`Bricolage\`,
     author: \`Kyle Mathews\`,
-    homeCity: \`San Francisco\`,
+    homeCity: \`San Francisco\`
   },
-  plugins: [
-    {
-      resolve: \`gatsby-source-filesystem\`,
-      options: {
-        path: \`\${__dirname}/src/pages\`,
-        name: \`pages\`,
-      },
-    },
-    \`gatsby-transformer-sharp\`,
-    \`gatsby-plugin-emotion\`,
-    {
-      resolve: \`gatsby-plugin-typography\`,
-      options: {
-        pathToConfigModule: \`src/utils/typography\`,
-      },
-    },
-    {
-      resolve: \`gatsby-transformer-remark\`,
-      options: {
-        plugins: [
-          {
-            resolve: \`gatsby-remark-images\`,
-            options: {
-              maxWidth: 590,
-            },
-          },
-          {
-            resolve: \`gatsby-remark-responsive-iframe\`,
-            options: {
-              wrapperStyle: \`margin-bottom: 1.0725rem\`,
-            },
-          },
-          \`gatsby-remark-prismjs\`,
-          \`gatsby-remark-copy-linked-files\`,
-          \`gatsby-remark-smartypants\`,
-        ],
-      },
-    },
-    \`gatsby-plugin-sharp\`,
-    {
-      resolve: \`gatsby-plugin-google-analytics\`,
-      options: {
-        trackingId: \`UA-774017-3\`,
-      },
-    },
-    {
-      resolve: \`gatsby-plugin-manifest\`,
-      options: {
-        name: \`Bricolage\`,
-        short_name: \`Bricolage\`,
-        icon: \`static/logo.png\`,
-        start_url: \`/\`,
-        background_color: redish,
-        theme_color: redish,
-        display: \`minimal-ui\`,
-      },
-    },
-    \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
-    \`gatsby-plugin-react-helmet\`,
-  ],
-}
-",
+  plugins: [{
+    resolve: \`gatsby-source-filesystem\`,
+    options: {
+      path: \`\${__dirname}/src/pages\`,
+      name: \`pages\`
+    }
+  }, \`gatsby-transformer-sharp\`, \`gatsby-plugin-emotion\`, {
+    resolve: \`gatsby-plugin-typography\`,
+    options: {
+      pathToConfigModule: \`src/utils/typography\`
+    }
+  }, {
+    resolve: \`gatsby-transformer-remark\`,
+    options: {
+      plugins: [{
+        resolve: \`gatsby-remark-images\`,
+        options: {
+          maxWidth: 590
+        }
+      }, {
+        resolve: \`gatsby-remark-responsive-iframe\`,
+        options: {
+          wrapperStyle: \`margin-bottom: 1.0725rem\`
+        }
+      }, \`gatsby-remark-prismjs\`, \`gatsby-remark-copy-linked-files\`, \`gatsby-remark-smartypants\`]
+    }
+  }, \`gatsby-plugin-sharp\`, {
+    resolve: \`gatsby-plugin-google-analytics\`,
+    options: {
+      trackingId: \`UA-774017-3\`
+    }
+  }, {
+    resolve: \`gatsby-plugin-manifest\`,
+    options: {
+      name: \`Bricolage\`,
+      short_name: \`Bricolage\`,
+      icon: \`static/logo.png\`,
+      start_url: \`/\`,
+      background_color: redish,
+      theme_color: redish,
+      display: \`minimal-ui\`
+    }
+  }, \`gatsby-plugin-offline\`, \`gatsby-plugin-react-helmet\`]
+};",
   "describe": "Configure gatsby-plugin-foo",
   "id": "gatsby-plugin-foo",
   "name": "gatsby-plugin-foo",
@@ -175,8 +185,7 @@ module.exports = {
       theme_color: redish,
       display: \`minimal-ui\`
     }
-  }, \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
-  \`gatsby-plugin-react-helmet\`, \\"gatsby-plugin-foo\\"]
+  }, \`gatsby-plugin-offline\`, \`gatsby-plugin-react-helmet\`, \\"gatsby-plugin-foo\\"]
 };",
 }
 `;
@@ -187,6 +196,7 @@ exports[`gatsby-plugin resource e2e plugin resource test: GatsbyPlugin update 1`
 Object {
   "id": "gatsby-plugin-foo",
   "name": "gatsby-plugin-foo",
+  "options": Object {},
 }
 `;
 
@@ -241,8 +251,7 @@ module.exports = {
       theme_color: redish,
       display: \`minimal-ui\`
     }
-  }, \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
-  \`gatsby-plugin-react-helmet\`, \\"gatsby-plugin-foo\\"]
+  }, \`gatsby-plugin-offline\`, \`gatsby-plugin-react-helmet\`, \\"gatsby-plugin-foo\\"]
 };",
   "describe": "Configure gatsby-plugin-foo",
   "id": "gatsby-plugin-foo",
@@ -296,8 +305,7 @@ module.exports = {
       theme_color: redish,
       display: \`minimal-ui\`
     }
-  }, \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
-  \`gatsby-plugin-react-helmet\`, \\"gatsby-plugin-foo\\"]
+  }, \`gatsby-plugin-offline\`, \`gatsby-plugin-react-helmet\`, \\"gatsby-plugin-foo\\"]
 };",
 }
 `;

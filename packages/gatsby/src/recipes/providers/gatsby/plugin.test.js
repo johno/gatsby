@@ -7,6 +7,7 @@ const resourceTestHelper = require(`../resource-test-helper`)
 
 const root = path.join(__dirname, `./fixtures`)
 const name = `gatsby-plugin-foo`
+const options = { from: `future` }
 const configPath = path.join(root, `gatsby-config.js`)
 
 describe(`gatsby-plugin resource`, () => {
@@ -16,7 +17,7 @@ describe(`gatsby-plugin resource`, () => {
       resourceName: `GatsbyPlugin`,
       context: { root },
       initialObject: { id: name, name },
-      partialUpdate: { id: name },
+      partialUpdate: { id: name, options },
     })
   })
 
