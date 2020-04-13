@@ -1,5 +1,5 @@
-const path = require(`path`)
-module.exports = recipe => {
-  const cli = require(`import-jsx`)(require.resolve(`./cli`))
+import cli from "./cli"
+
+export default recipe => {
   cli(recipe)
 }

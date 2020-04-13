@@ -1,0 +1,6 @@
+{
+  "name": "recipes",
+  "dependencies": {
+    "react": "^16.8.0"
+  }
+}

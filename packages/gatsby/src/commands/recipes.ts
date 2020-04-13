@@ -45,7 +45,7 @@ module.exports = async (program: IProgram): Promise<void> => {
   let started = false
   subprocess.stdout.on("data", data => {
     if (!started) {
-      const runRecipe = require(`../recipes/index`)
+      const runRecipe = require(`../recipes/index`).default
       runRecipe({ recipe, projectRoot: program.directory })
       started = true
     }

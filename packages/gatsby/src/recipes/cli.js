@@ -1,23 +1,21 @@
-const fs = require(`fs`)
-const lodash = require(`lodash`)
-
-const React = require(`react`)
-const { useState } = require(`react`)
-const { render, Box, Text, Color, useInput, useApp, Static } = require(`ink`)
-const Spinner = require(`ink-spinner`).default
-const Link = require(`ink-link`)
-const MDX = require(`@mdx-js/runtime`)
-const {
+import fs from "fs"
+import lodash from "lodash"
+import React, { useState } from "react"
+import { render, Box, Text, Color, useInput, useApp, Static } from "ink"
+import Spinner from "ink-spinner"
+import Link from "ink-link"
+import MDX from "@mdx-js/runtime"
+import {
   createClient,
   useMutation,
   useSubscription,
   Provider,
   defaultExchanges,
   subscriptionExchange,
-} = require(`urql`)
-const { SubscriptionClient } = require(`subscriptions-transport-ws`)
-const fetch = require(`node-fetch`)
-const ws = require(`ws`)
+} from "urql"
+import { SubscriptionClient } from "subscriptions-transport-ws"
+import fetch from "node-fetch"
+import ws from "ws"
 
 let renderCount = 1
 
@@ -102,7 +100,7 @@ log(
 
 const PlanContext = React.createContext({})
 
-module.exports = ({ recipe, projectRoot }) => {
+export default ({ recipe, projectRoot }) => {
   const GRAPHQL_ENDPOINT = `http://localhost:4000/graphql`
 
   const subscriptionClient = new SubscriptionClient(
