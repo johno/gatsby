@@ -27,16 +27,20 @@ const recipeMachine = Machine(
           src: async (context, event) => {
             let parsed
 
-            if (context.src) {
-              parsed = await parser.parse(context.src)
-            } else if (context.recipePath && context.projectRoot) {
-              parsed = await parser(context.recipePath, context.projectRoot)
-            } else {
-              throw new Error(
-                JSON.stringify({
-                  validationError: `A recipe must be specified`,
-                })
-              )
+            try {
+              if (context.src) {
+                parsed = await parser.parse(context.src)
+              } else if (context.recipePath && context.projectRoot) {
+                parsed = await parser(context.recipePath, context.projectRoot)
+              } else {
+                throw new Error(
+                  JSON.stringify({
+                    validationError: `A recipe must be specified`,
+                  })
+                )
+              }
+            } catch (e) {
+              throw e
             }
 
             return parsed
@@ -45,7 +49,6 @@ const recipeMachine = Machine(
             target: `doneError`,
             actions: assign({
               error: (context, event) => {
-                console.log(msg)
                 try {
                   const msg = JSON.parse(event.data.message)
                   return msg
