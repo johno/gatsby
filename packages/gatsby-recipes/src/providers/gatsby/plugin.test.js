@@ -71,4 +71,20 @@ describe(`gatsby-plugin resource`, () => {
 
     expect(result).toEqual(plugins)
   })
+
+  test(`handles config options as an object`, async () => {
+    const configSrc = await fs.readFile(configPath, `utf8`)
+    const newConfigSrc = addPluginToConfig(
+      configSrc,
+      `gatsby-plugin-react-helmet`,
+      {
+        foo: `bar`,
+        baz: `\`\${__dirname}/weee\``,
+      }
+    )
+
+    const result = getPluginsFromConfig(newConfigSrc)
+
+    expect(result).toMatchSnapshot()
+  })
 })

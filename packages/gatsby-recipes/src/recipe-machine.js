@@ -93,7 +93,6 @@ const recipeMachine = Machine(
           src: async (context, event) => {
             const result = await validateRecipe(context.steps)
             if (result.length > 0) {
-              // is stringifying the only way to pass data around in errors 🤔
               throw new Error(JSON.stringify(result))
             }
 

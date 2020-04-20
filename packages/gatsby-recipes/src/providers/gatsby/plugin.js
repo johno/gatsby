@@ -1,6 +1,8 @@
 const fs = require(`fs-extra`)
 const path = require(`path`)
 const babel = require(`@babel/core`)
+const generate = require(`@babel/generator`).default
+const t = require(`@babel/types`)
 const Joi = require(`@hapi/joi`)
 const glob = require(`glob`)
 const prettier = require(`prettier`)
@@ -9,7 +11,39 @@ const declare = require(`@babel/helper-plugin-utils`).declare
 
 const getDiff = require(`../utils/get-diff`)
 const resourceSchema = require(`../resource-schema`)
+
+/*
+const unwrapTemplateLiterals = str =>
+  str.trim().replace(/^`/, ``).replace(/`$/, ``)
+*/
+
 const fileExists = filePath => fs.existsSync(filePath)
+
+const getElementProps = nodeValue => {
+  if (!nodeValue || !nodeValue.properties) {
+    return getValueFromLiteral(nodeValue)
+  }
+
+  const props = nodeValue.properties.reduce((acc, curr) => {
+    let value = null
+
+    if (curr.value) {
+      value = getValueFromLiteral(curr.value)
+    } else if (t.isObjectExpression(curr.value)) {
+      value = curr.value.expression.properties.reduce((acc, curr) => {
+        acc[curr.key.name] = getElementProps(curr)
+        return acc
+      }, {})
+    } else {
+      throw new Error(`Did not recognize ${curr}`)
+    }
+
+    acc[curr.key.name] = value
+    return acc
+  }, {})
+
+  return props
+}
 
 const listShadowableFilesForTheme = (directory, theme) => {
   const fullThemePath = path.join(directory, `node_modules`, theme, `src`)
@@ -50,7 +84,12 @@ const getValueFromLiteral = node => {
   }
 
   if (node.type === `TemplateLiteral`) {
-    return node.quasis[0].value.raw
+    delete node.leadingComments
+    return generate(node).code
+  }
+
+  if (node.type === `ArrayExpression`) {
+    return node.elements.map(getElementProps)
   }
 
   return null
@@ -67,6 +106,29 @@ const getNameForPlugin = node => {
   }
 
   return null
+}
+
+const getOptionsForPlugin = node => {
+  if (node.type !== `ObjectExpression`) {
+    return null
+  }
+
+  const options = node.properties.find(
+    property => property.key.name === `options`
+  )
+
+  if (options) {
+    return getElementProps(options.value)
+  }
+
+  return null
+}
+
+const getPlugin = node => {
+  return {
+    name: getNameForPlugin(node),
+    options: getOptionsForPlugin(node),
+  }
 }
 
 const addPluginToConfig = (src, pluginName) => {
@@ -196,7 +258,7 @@ class BabelPluginGetPluginsFromGatsbyConfig {
             const plugins = right.properties.find(p => p.key.name === `plugins`)
 
             plugins.value.elements.map(node => {
-              this.state.push(getNameForPlugin(node))
+              this.state.push(getPlugin(node))
             })
           },
         },
