@@ -3,7 +3,8 @@ const Joi = require(`@hapi/joi`)
 const { GraphQLString, GraphQLObjectType, GraphQLList } = require(`graphql`)
 const _ = require(`lodash`)
 
-const resources = require(`./resources`)
+const baseResources = require(`./resources`)
+const resources = { GatsbyPlugin: baseResources.GatsbyPlugin }
 
 const typeNameToHumanName = name => {
   if (name.endsWith(`Connection`)) {

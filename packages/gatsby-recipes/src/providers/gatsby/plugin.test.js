@@ -78,8 +78,15 @@ describe(`gatsby-plugin resource`, () => {
       configSrc,
       `gatsby-plugin-react-helmet`,
       {
-        foo: `bar`,
-        baz: `\`\${__dirname}/weee\``,
+        foo: 1,
+        bar: `baz`,
+        baz: `qux`,
+        otherStuff: [
+          {
+            foo: `bar2`,
+            bar: [{ foo: `bar` }],
+          },
+        ],
       }
     )
 

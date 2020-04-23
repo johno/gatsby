@@ -1,6 +1,7 @@
 const fs = require(`fs-extra`)
 const path = require(`path`)
 const babel = require(`@babel/core`)
+const template = require(`@babel/template`).default
 const generate = require(`@babel/generator`).default
 const t = require(`@babel/types`)
 const Joi = require(`@hapi/joi`)
@@ -19,6 +20,8 @@ const unwrapTemplateLiterals = str =>
 
 const fileExists = filePath => fs.existsSync(filePath)
 
+const getKeyNameFromAttribute = node => node.key.name || node.key.value
+
 const getElementProps = nodeValue => {
   if (!nodeValue || !nodeValue.properties) {
     return getValueFromLiteral(nodeValue)
@@ -31,14 +34,14 @@ const getElementProps = nodeValue => {
       value = getValueFromLiteral(curr.value)
     } else if (t.isObjectExpression(curr.value)) {
       value = curr.value.expression.properties.reduce((acc, curr) => {
-        acc[curr.key.name] = getElementProps(curr)
+        acc[getKeyNameFromAttribute(curr)] = getElementProps(curr)
         return acc
       }, {})
     } else {
       throw new Error(`Did not recognize ${curr}`)
     }
 
-    acc[curr.key.name] = value
+    acc[getKeyNameFromAttribute(curr)] = value
     return acc
   }, {})
 
@@ -79,7 +82,11 @@ const isDefaultExport = node => {
 }
 
 const getValueFromLiteral = node => {
-  if (node.type === `StringLiteral`) {
+  if (
+    node.type === `Literal` ||
+    node.type === `StringLiteral` ||
+    node.type === `NumericLiteral`
+  ) {
     return node.value
   }
 
@@ -90,6 +97,10 @@ const getValueFromLiteral = node => {
 
   if (node.type === `ArrayExpression`) {
     return node.elements.map(getElementProps)
+  }
+
+  if (node.type === `ObjectExpression`) {
+    return getElementProps(node)
   }
 
   return null
@@ -110,7 +121,7 @@ const getNameForPlugin = node => {
 
 const getOptionsForPlugin = node => {
   if (node.type !== `ObjectExpression`) {
-    return null
+    return undefined
   }
 
   const options = node.properties.find(
@@ -121,7 +132,7 @@ const getOptionsForPlugin = node => {
     return getElementProps(options.value)
   }
 
-  return null
+  return undefined
 }
 
 const getPlugin = node => {
@@ -131,9 +142,10 @@ const getPlugin = node => {
   }
 }
 
-const addPluginToConfig = (src, pluginName) => {
+const addPluginToConfig = (src, pluginName, options) => {
   const addPlugins = new BabelPluginAddPluginsToGatsbyConfig({
     pluginOrThemeName: pluginName,
+    options,
     shouldAdd: true,
   })
 
@@ -156,13 +168,13 @@ const getPluginsFromConfig = src => {
   return getPlugins.state
 }
 
-const create = async ({ root }, { name }) => {
+const create = async ({ root }, { name, options }) => {
   const configPath = path.join(root, `gatsby-config.js`)
   const configSrc = await fs.readFile(configPath, `utf8`)
 
   const prettierConfig = await prettier.resolveConfig(root)
 
-  let code = addPluginToConfig(configSrc, name)
+  let code = addPluginToConfig(configSrc, name, options)
   code = prettier.format(code, { ...prettierConfig, parser: `babel` })
 
   await fs.writeFile(configPath, code)
@@ -174,10 +186,12 @@ const read = async ({ root }, id) => {
   const configPath = path.join(root, `gatsby-config.js`)
   const configSrc = await fs.readFile(configPath, `utf8`)
 
-  const name = getPluginsFromConfig(configSrc).find(name => name === id)
+  const plugin = getPluginsFromConfig(configSrc).find(
+    plugin => plugin.name === id
+  )
 
-  if (name) {
-    return { id, name, _message: `Installed ${id} in gatsby-config.js` }
+  if (plugin) {
+    return { id, ...plugin, _message: `Installed ${id} in gatsby-config.js` }
   } else {
     return undefined
   }
@@ -201,7 +215,7 @@ const destroy = async ({ root }, { name }) => {
 }
 
 class BabelPluginAddPluginsToGatsbyConfig {
-  constructor({ pluginOrThemeName, shouldAdd }) {
+  constructor({ pluginOrThemeName, shouldAdd, options }) {
     this.plugin = declare(api => {
       api.assertVersion(7)
 
@@ -222,7 +236,22 @@ class BabelPluginAddPluginsToGatsbyConfig {
               const pluginNames = plugins.value.elements.map(getNameForPlugin)
               const exists = pluginNames.includes(pluginOrThemeName)
               if (!exists) {
-                plugins.value.elements.push(t.stringLiteral(pluginOrThemeName))
+                if (options) {
+                  const pluginWithOptions = template(`
+                    const foo = {
+                      resolve: '${pluginOrThemeName}',
+                      options: ${JSON.stringify(options, null, 2)}
+                    }
+                  `)()
+
+                  const fullOptionConfig =
+                    pluginWithOptions.declarations[0].init
+                  plugins.value.elements.push(fullOptionConfig)
+                } else {
+                  plugins.value.elements.push(
+                    t.stringLiteral(pluginOrThemeName)
+                  )
+                }
               }
             } else {
               plugins.value.elements = plugins.value.elements.filter(
@@ -299,6 +328,7 @@ module.exports.all = async ({ root }) => {
 
 const schema = {
   name: Joi.string(),
+  options: Joi.object(),
   shadowableFiles: Joi.array().items(Joi.string()),
   shadowedFiles: Joi.array().items(Joi.string()),
   ...resourceSchema,
@@ -310,7 +340,7 @@ const validate = resource =>
 exports.schema = schema
 exports.validate = validate
 
-module.exports.plan = async ({ root }, { id, name }) => {
+module.exports.plan = async ({ root }, { id, name, options }) => {
   const fullName = id || name
   const configPath = path.join(root, `gatsby-config.js`)
   const prettierConfig = await prettier.resolveConfig(root)
@@ -319,7 +349,7 @@ module.exports.plan = async ({ root }, { id, name }) => {
     ...prettierConfig,
     parser: `babel`,
   })
-  let newContents = addPluginToConfig(src, fullName)
+  let newContents = addPluginToConfig(src, fullName, options)
   newContents = prettier.format(newContents, {
     ...prettierConfig,
     parser: `babel`,
