@@ -1,14 +1,20 @@
 const fs = require(`fs-extra`)
 const path = require(`path`)
 const babel = require(`@babel/core`)
+const t = require(`@babel/types`)
+const declare = require(`@babel/helper-plugin-utils`).declare
 const Joi = require(`@hapi/joi`)
 const glob = require(`glob`)
 const prettier = require(`prettier`)
 
-const declare = require(`@babel/helper-plugin-utils`).declare
-
 const getDiff = require(`../utils/get-diff`)
 const resourceSchema = require(`../resource-schema`)
+
+const isDefaultExport = require(`./utils/is-default-export`)
+const buildPluginNode = require(`./utils/build-plugin-node`)
+const getObjectFromNode = require(`./utils/get-object-from-node`)
+const { getValueFromNode } = require(`./utils/get-object-from-node`)
+
 const fileExists = filePath => fs.existsSync(filePath)
 
 const listShadowableFilesForTheme = (directory, theme) => {
@@ -30,48 +36,46 @@ const listShadowableFilesForTheme = (directory, theme) => {
   return { shadowedFiles, shadowableFiles }
 }
 
-const isDefaultExport = node => {
-  if (!node || node.type !== `MemberExpression`) {
-    return false
+const getOptionsForPlugin = node => {
+  if (!t.isObjectExpression(node)) {
+    return undefined
   }
 
-  const { object, property } = node
+  const options = node.properties.find(
+    property => property.key.name === `options`
+  )
 
-  if (object.type !== `Identifier` || object.name !== `module`) return false
-  if (property.type !== `Identifier` || property.name !== `exports`)
-    return false
+  if (options) {
+    return getObjectFromNode(options.value)
+  }
 
-  return true
+  return undefined
 }
 
-const getValueFromLiteral = node => {
-  if (node.type === `StringLiteral`) {
-    return node.value
+const getPlugin = node => {
+  return {
+    name: getNameForPlugin(node),
+    options: getOptionsForPlugin(node),
   }
-
-  if (node.type === `TemplateLiteral`) {
-    return node.quasis[0].value.raw
-  }
-
-  return null
 }
 
 const getNameForPlugin = node => {
-  if (node.type === `StringLiteral` || node.type === `TemplateLiteral`) {
-    return getValueFromLiteral(node)
+  if (t.isStringLiteral(node) || t.isTemplateLiteral(node)) {
+    return getValueFromNode(node)
   }
 
-  if (node.type === `ObjectExpression`) {
+  if (t.isObjectExpression(node)) {
     const resolve = node.properties.find(p => p.key.name === `resolve`)
-    return resolve ? getValueFromLiteral(resolve.value) : null
+    return resolve ? getValueFromNode(resolve.value) : null
   }
 
   return null
 }
 
-const addPluginToConfig = (src, pluginName) => {
+const addPluginToConfig = (src, pluginName, options) => {
   const addPlugins = new BabelPluginAddPluginsToGatsbyConfig({
     pluginOrThemeName: pluginName,
+    options,
     shouldAdd: true,
   })
 
@@ -94,13 +98,13 @@ const getPluginsFromConfig = src => {
   return getPlugins.state
 }
 
-const create = async ({ root }, { name }) => {
+const create = async ({ root }, { name, options }) => {
   const configPath = path.join(root, `gatsby-config.js`)
   const configSrc = await fs.readFile(configPath, `utf8`)
 
   const prettierConfig = await prettier.resolveConfig(root)
 
-  let code = addPluginToConfig(configSrc, name)
+  let code = addPluginToConfig(configSrc, name, options)
   code = prettier.format(code, { ...prettierConfig, parser: `babel` })
 
   await fs.writeFile(configPath, code)
@@ -112,10 +116,12 @@ const read = async ({ root }, id) => {
   const configPath = path.join(root, `gatsby-config.js`)
   const configSrc = await fs.readFile(configPath, `utf8`)
 
-  const name = getPluginsFromConfig(configSrc).find(name => name === id)
+  const plugin = getPluginsFromConfig(configSrc).find(
+    plugin => plugin.name === id
+  )
 
-  if (name) {
-    return { id, name, _message: `Installed ${id} in gatsby-config.js` }
+  if (plugin) {
+    return { id, ...plugin, _message: `Installed ${id} in gatsby-config.js` }
   } else {
     return undefined
   }
@@ -139,11 +145,10 @@ const destroy = async ({ root }, { name }) => {
 }
 
 class BabelPluginAddPluginsToGatsbyConfig {
-  constructor({ pluginOrThemeName, shouldAdd }) {
+  constructor({ pluginOrThemeName, shouldAdd, options }) {
     this.plugin = declare(api => {
       api.assertVersion(7)
 
-      const { types: t } = api
       return {
         visitor: {
           ExpressionStatement(path) {
@@ -160,7 +165,8 @@ class BabelPluginAddPluginsToGatsbyConfig {
               const pluginNames = plugins.value.elements.map(getNameForPlugin)
               const exists = pluginNames.includes(pluginOrThemeName)
               if (!exists) {
-                plugins.value.elements.push(t.stringLiteral(pluginOrThemeName))
+                const pluginNode = buildPluginNode(pluginOrThemeName, options)
+                plugins.value.elements.push(pluginNode)
               }
             } else {
               plugins.value.elements = plugins.value.elements.filter(
@@ -196,7 +202,7 @@ class BabelPluginGetPluginsFromGatsbyConfig {
             const plugins = right.properties.find(p => p.key.name === `plugins`)
 
             plugins.value.elements.map(node => {
-              this.state.push(getNameForPlugin(node))
+              this.state.push(getPlugin(node))
             })
           },
         },
@@ -237,6 +243,7 @@ module.exports.all = async ({ root }) => {
 
 const schema = {
   name: Joi.string(),
+  options: Joi.object(),
   shadowableFiles: Joi.array().items(Joi.string()),
   shadowedFiles: Joi.array().items(Joi.string()),
   ...resourceSchema,
@@ -248,7 +255,7 @@ const validate = resource =>
 exports.schema = schema
 exports.validate = validate
 
-module.exports.plan = async ({ root }, { id, name }) => {
+module.exports.plan = async ({ root }, { id, name, options }) => {
   const fullName = id || name
   const configPath = path.join(root, `gatsby-config.js`)
   const prettierConfig = await prettier.resolveConfig(root)
@@ -257,7 +264,7 @@ module.exports.plan = async ({ root }, { id, name }) => {
     ...prettierConfig,
     parser: `babel`,
   })
-  let newContents = addPluginToConfig(src, fullName)
+  let newContents = addPluginToConfig(src, fullName, options)
   newContents = prettier.format(newContents, {
     ...prettierConfig,
     parser: `babel`,

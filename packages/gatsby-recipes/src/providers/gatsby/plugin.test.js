@@ -46,4 +46,23 @@ describe(`gatsby-plugin resource`, () => {
 
     expect(result).toEqual(plugins)
   })
+
+  test(`handles config options as an object`, async () => {
+    const configSrc = await fs.readFile(configPath, `utf8`)
+    const newConfigSrc = addPluginToConfig(configSrc, `gatsby-plugin-foo`, {
+      foo: 1,
+      bar: `baz`,
+      baz: `qux`,
+      otherStuff: [
+        {
+          foo: `bar2`,
+          bar: [{ foo: `bar` }],
+        },
+      ],
+    })
+
+    const result = getPluginsFromConfig(newConfigSrc)
+
+    expect(result).toMatchSnapshot()
+  })
 })

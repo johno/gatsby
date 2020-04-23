@@ -5,6 +5,7 @@ Object {
   "_message": "Installed gatsby-plugin-foo in gatsby-config.js",
   "id": "gatsby-plugin-foo",
   "name": "gatsby-plugin-foo",
+  "options": undefined,
 }
 `;
 
@@ -54,6 +55,7 @@ Object {
   "_message": "Installed gatsby-plugin-foo in gatsby-config.js",
   "id": "gatsby-plugin-foo",
   "name": "gatsby-plugin-foo",
+  "options": undefined,
 }
 `;
 
@@ -91,6 +93,7 @@ Object {
   "_message": "Installed gatsby-plugin-foo in gatsby-config.js",
   "id": "gatsby-plugin-foo",
   "name": "gatsby-plugin-foo",
+  "options": undefined,
 }
 `;
 
@@ -160,7 +163,7 @@ module.exports = {
         display: \`minimal-ui\`,
       },
     },
-    \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
+    \`gatsby-plugin-offline\`,
     \`gatsby-plugin-react-helmet\`,
   ],
 }
@@ -171,7 +174,7 @@ module.exports = {
 
 @@ -64,6 +64,7 @@
       },
-      \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
+      \`gatsby-plugin-offline\`,
       \`gatsby-plugin-react-helmet\`,
 +     \\"gatsby-plugin-foo\\",
     ],
@@ -243,7 +246,7 @@ module.exports = {
         display: \`minimal-ui\`,
       },
     },
-    \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
+    \`gatsby-plugin-offline\`,
     \`gatsby-plugin-react-helmet\`,
     \\"gatsby-plugin-foo\\",
   ],
@@ -259,6 +262,7 @@ Object {
   "_message": "Installed gatsby-plugin-foo in gatsby-config.js",
   "id": "gatsby-plugin-foo",
   "name": "gatsby-plugin-foo",
+  "options": undefined,
 }
 `;
 
@@ -328,7 +332,7 @@ module.exports = {
         display: \`minimal-ui\`,
       },
     },
-    \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
+    \`gatsby-plugin-offline\`,
     \`gatsby-plugin-react-helmet\`,
     \\"gatsby-plugin-foo\\",
   ],
@@ -402,11 +406,107 @@ module.exports = {
         display: \`minimal-ui\`,
       },
     },
-    \`gatsby-plugin-offline\`, // \`gatsby-plugin-preact\`,
+    \`gatsby-plugin-offline\`,
     \`gatsby-plugin-react-helmet\`,
     \\"gatsby-plugin-foo\\",
   ],
 }
 ",
 }
+`;
+
+exports[`gatsby-plugin resource handles config options as an object 1`] = `
+Array [
+  Object {
+    "name": "gatsby-source-filesystem",
+    "options": Object {
+      "name": "pages",
+      "path": "\${__dirname}/src/pages",
+    },
+  },
+  Object {
+    "name": "gatsby-transformer-sharp",
+    "options": undefined,
+  },
+  Object {
+    "name": "gatsby-plugin-emotion",
+    "options": undefined,
+  },
+  Object {
+    "name": "gatsby-plugin-typography",
+    "options": Object {
+      "pathToConfigModule": "src/utils/typography",
+    },
+  },
+  Object {
+    "name": "gatsby-transformer-remark",
+    "options": Object {
+      "plugins": Array [
+        Object {
+          "options": Object {
+            "maxWidth": 590,
+          },
+          "resolve": "gatsby-remark-images",
+        },
+        Object {
+          "options": Object {
+            "wrapperStyle": "margin-bottom: 1.0725rem",
+          },
+          "resolve": "gatsby-remark-responsive-iframe",
+        },
+        "gatsby-remark-prismjs",
+        "gatsby-remark-copy-linked-files",
+        "gatsby-remark-smartypants",
+      ],
+    },
+  },
+  Object {
+    "name": "gatsby-plugin-sharp",
+    "options": undefined,
+  },
+  Object {
+    "name": "gatsby-plugin-google-analytics",
+    "options": Object {
+      "trackingId": "UA-774017-3",
+    },
+  },
+  Object {
+    "name": "gatsby-plugin-manifest",
+    "options": Object {
+      "background_color": null,
+      "display": "minimal-ui",
+      "icon": "static/logo.png",
+      "name": "Bricolage",
+      "short_name": "Bricolage",
+      "start_url": "/",
+      "theme_color": null,
+    },
+  },
+  Object {
+    "name": "gatsby-plugin-offline",
+    "options": undefined,
+  },
+  Object {
+    "name": "gatsby-plugin-react-helmet",
+    "options": undefined,
+  },
+  Object {
+    "name": "gatsby-plugin-foo",
+    "options": Object {
+      "bar": "baz",
+      "baz": "qux",
+      "foo": 1,
+      "otherStuff": Array [
+        Object {
+          "bar": Array [
+            Object {
+              "foo": "bar",
+            },
+          ],
+          "foo": "bar2",
+        },
+      ],
+    },
+  },
+]
 `;
