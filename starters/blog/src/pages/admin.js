@@ -26,7 +26,6 @@ const PROJECT_ROOT = '/Users/johno-mini/c/gatsby/starters/blog'
 
 const Boxen = 'div'
 const Text = 'p'
-const Static = 'div'
 const Color = 'span'
 const Spinner = () => <div>Loading...</div>
 
