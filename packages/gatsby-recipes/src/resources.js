@@ -14,6 +14,8 @@ const componentResourceMapping = {
   NPMScript: npmPackageScriptResource,
   NPMPackageJson: npmPackageJsonResource,
   GitIgnore: gitIgnoreResource,
+  ContentfulSpace: true,
+  ContentfulEnvironment: true,
 }
 
 module.exports = componentResourceMapping

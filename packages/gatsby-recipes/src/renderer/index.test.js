@@ -8,7 +8,23 @@ const mdxFixture = `
 <NPMPackage name="gatsby" />
 `
 
+const contentfulFixture = `
+# Hello, world!
+
+---
+
+<ContentfulSpace name="hi">
+  <ContentfulEnvironment name="production" />
+</ContentfulSpace>
+`
+
 describe(`renderer`, () => {
+  test(`handles providers leveraging context`, async () => {
+    const result = await render(contentfulFixture)
+
+    expect(result).toMatchInlineSnapshot(`Array []`)
+  })
+
   test(`handles MDX as input`, async () => {
     const result = await render(mdxFixture)
 

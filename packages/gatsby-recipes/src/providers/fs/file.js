@@ -6,7 +6,7 @@ const isUrl = require(`is-url`)
 const fetch = require(`node-fetch`)
 const isBinaryPath = require(`is-binary-path`)
 
-const getDiff = require(`../utils/get-diff`)
+const getDiff = require(`../utils/get-diff`).default
 const resourceSchema = require(`../resource-schema`)
 
 const makePath = (root, relativePath) => path.join(root, relativePath)
