@@ -4,18 +4,13 @@ const { Suspense } = require(`react`)
 const resources = require(`../resources`)
 
 const RecipesReconciler = require(`./reconciler`)
-const ErrorBoundary = require(`./error-boundary`)
 const transformToPlan = require(`./transform-to-plan-structure`)
+const ErrorBoundary = require(`./error-boundary`)
+const { getUserProps } = require(`./utils`)
 
 const promises = []
 const errors = []
 const cache = new Map()
-
-const getUserProps = props => {
-  // eslint-disable-next-line
-  const { mdxType, children, ...userProps } = props
-  return userProps
-}
 
 const Wrapper = ({ children }) => (
   <ErrorBoundary>
@@ -23,18 +18,12 @@ const Wrapper = ({ children }) => (
   </ErrorBoundary>
 )
 
-const ResourceComponent = ({ _resourceName: Resource, ...props }) => {
-  const userProps = getUserProps(props)
+const ResourceComponent = ({ _resourceName: resourceName, ...props }) => {
+  const context = useResourceContext()
+  const resourceData = readResource(resourceName, context, props)
 
   return (
-    <Suspense fallback={<p>Reading resource...</p>}>
-      <Resource>
-        {JSON.stringify({
-          ...readResource(Resource, { root: process.cwd() }, props),
-          _props: userProps,
-        })}
-      </Resource>
-    </Suspense>
+    <Resource resourceName={resourceName} props={props} data={resourceData} />
   )
 }
 

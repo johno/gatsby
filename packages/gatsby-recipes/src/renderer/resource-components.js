@@ -4,7 +4,6 @@ const { Suspense, useContext } = require(`react`)
 const ResourceContext = React.createContext({})
 const useResourceContext = resourceName => {
   const context = useContext(ResourceContext)
-  console.log(context[resourceName])
   return context[resourceName]
 }
 
@@ -15,7 +14,9 @@ const { ResourceComponent } = require(`./render`)
 const resourceComponents = Object.keys(resources).reduce(
   (acc, resourceName) => {
     acc[resourceName] = props => (
-      <ResourceComponent _resourceName={resourceName} {...props} />
+      <Suspense fallback={<p>Rendering {resourceName}</p>}>
+        <ResourceComponent _resourceName={resourceName} {...props} />
+      </Suspense>
     )
 
     // Make sure the component is pretty printed in reconciler output

@@ -1,0 +1,40 @@
+# Contentful blog setup
+
+---
+
+Create a new space, environment, and blog post type
+
+<ContentfulSpace name="blog">
+  <ContentfulEnvironment name="production">
+    <ContentfulContentType
+      schema={`
+        type BlogPost {
+          title: String!
+          date: Date!
+          body: String! @metadata(type: "Text")
+        }
+      `}
+    />
+  </ContentfulEnvironment>
+</ContentfulSpace>
+
+---
+
+Local plugin to source the contentful blog posts and to create pages
+
+<File content="foo" />
+<GatsbyPlugin name="./foo" />
+
+---
+
+Create a demo post!
+
+<ContentfulContent
+  spaceName="blog"
+  name="BlogPost"
+  data={{
+    title: 'Hello, world!'
+    date: '2020-20-20'
+    body: '# Yay!'
+  }}
+/>
