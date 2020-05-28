@@ -38,6 +38,8 @@ const recipeMachine = Machine(
               )
             }
 
+            console.log({ parsed })
+
             return parsed
           },
           onError: {
@@ -69,6 +71,8 @@ const recipeMachine = Machine(
         invoke: {
           id: `validateSteps`,
           src: async (context, event) => {
+            console.log({ context })
+            console.log(`hiiiiiiiiiiiiii`)
             const result = await validateSteps(context.steps)
             if (result.length > 0) {
               throw new Error(JSON.stringify(result))

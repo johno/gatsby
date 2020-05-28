@@ -71,6 +71,8 @@ const parse = async src => {
 
     const steps = [wrappedIntroStep, ...wrappedResourceSteps]
 
+    console.log(steps)
+
     return {
       ast,
       steps,
