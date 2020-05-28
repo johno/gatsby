@@ -8,7 +8,7 @@ const ansi2HTML = require(`ansi-html`)
 const {
   CircularProgressbarWithChildren,
 } = require(`react-circular-progressbar`)
-require("react-circular-progressbar/dist/styles.css")
+require(`react-circular-progressbar/dist/styles.css`)
 const {
   createClient,
   useMutation,
@@ -20,7 +20,7 @@ const {
 const { SubscriptionClient } = require(`subscriptions-transport-ws`)
 const semver = require(`semver`)
 
-const SelectInput = "select"
+const SelectInput = `select`
 
 // Check for what version of React is loaded & warn if it's too low.
 if (semver.lt(React.version, `16.8.0`)) {
@@ -29,12 +29,13 @@ if (semver.lt(React.version, `16.8.0`)) {
   )
 }
 
-const PROJECT_ROOT = "/Users/kylemathews/projects/gatsby/starters/blog"
+const PROJECT_ROOT =
+  process.cwd() || `/Users/kylemathews/projects/gatsby/starters/blog`
 
-const Boxen = "div"
-const Text = "p"
-const Static = "div"
-const Color = "span"
+const Boxen = `div`
+const Text = `p`
+const Static = `div`
+const Color = `span`
 const Spinner = () => <span>Loading...</span>
 
 const WelcomeMessage = () => (
@@ -149,6 +150,12 @@ const components = {
   File: () => null,
   GatsbyShadowFile: () => null,
   NPMScript: () => null,
+  RecipeIntroduction: props => (
+    <div style={{ background: `tomato` }} {...props} />
+  ),
+  RecipeStep: props => (
+    <div style={{ border: `4px solid tomato` }} {...props} />
+  ),
 }
 
 const log = (label, textOrObj) => {
@@ -270,7 +277,7 @@ const RecipeGui = ({
       }
 
       if (!state) {
-        console.log("Loading recipe!")
+        console.log(`Loading recipe!`)
         return (
           <Wrapper>
             <Spinner /> Loading recipe
@@ -279,7 +286,7 @@ const RecipeGui = ({
       }
 
       console.log(state)
-      console.log("!!!!!!")
+      console.log(`!!!!!!`)
 
       const isDone = state.value === `done`
 
@@ -513,7 +520,7 @@ const RecipeGui = ({
       if (isDone) {
         process.nextTick(() => {
           subscriptionClient.close()
-          log("The recipe finished successfully")
+          log(`The recipe finished successfully`)
           lodash.flattenDeep(state.context.stepResources).forEach((res, i) => {
             log(`✅ ${res._message}\n`)
           })
@@ -541,9 +548,9 @@ const RecipeGui = ({
             ))}
           </div>
 
-          {state.context.steps.slice(1).map((step, i) => {
-            return <Step state={state} step={step} i={i} />
-          })}
+          {state.context.steps.slice(1).map((step, i) => (
+            <Step state={state} step={step} i={i} />
+          ))}
         </Wrapper>
       )
     }
