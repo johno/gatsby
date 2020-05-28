@@ -548,9 +548,15 @@ const RecipeGui = ({
             ))}
           </div>
 
+<<<<<<< HEAD
           {state.context.steps.slice(1).map((step, i) => (
             <Step state={state} step={step} i={i} />
           ))}
+=======
+          {state.context.steps.slice(1).map((step, i) => {
+            return <Step state={state} step={step} i={i} />
+          })}
+>>>>>>> WIP
         </Wrapper>
       )
     }
