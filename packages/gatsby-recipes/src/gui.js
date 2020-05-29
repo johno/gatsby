@@ -1,35 +1,30 @@
 /** @jsx jsx */
-import * as GatsbyComponents from "gatsby-interface"
 import { jsx, ThemeProvider as ThemeUIProvider, Styled } from "theme-ui"
-const lodash = require(`lodash`)
-const React = require(`react`)
-const { useState } = require(`react`)
-const MDX = require(`@mdx-js/runtime`).default
-const ansi2HTML = require(`ansi-html`)
+import React, { useState } from "react"
+import MDX from "@mdx-js/runtime"
+import lodash from "lodash"
+import ansi2HTML from "ansi-html"
 import { MdRefresh, MdBrightness1 } from "react-icons/md"
 import { keyframes } from "@emotion/core"
-const {
+import {
   Button,
   ThemeProvider,
   getTheme,
   BaseAnchor,
   Heading,
-  InProgressIcon,
   SuccessIcon,
-} = require(`gatsby-interface`)
-const {
+} from "gatsby-interface"
+import {
   createClient,
   useMutation,
   useSubscription,
   Provider,
   defaultExchanges,
   subscriptionExchange,
-} = require(`urql`)
-const { SubscriptionClient } = require(`subscriptions-transport-ws`)
-const slugify = require(`slugify`)
-require(`normalize.css`)
-
-console.log({ GatsbyComponents })
+} from "urql"
+import { SubscriptionClient } from "subscriptions-transport-ws"
+import slugify from "slugify"
+import "normalize.css"
 
 const theme = getTheme()
 
@@ -43,7 +38,7 @@ const makeResourceId = res => {
   return id
 }
 
-const PROJECT_ROOT = `/Users/kylemathews/programs/recipes-test`
+const PROJECT_ROOT = `/Users/johno-mini/c/gatsby/starters/blog`
 
 const Color = `span`
 const Spinner = () => <span>Loading...</span>
@@ -183,8 +178,7 @@ log(
 )
 
 const RecipeGui = ({
-  // recipe = `./test.mdx`,
-  recipe = `jest.mdx`,
+  recipe = `./test.mdx`,
   graphqlPort = 4000,
   projectRoot = PROJECT_ROOT,
 }) => {
@@ -241,11 +235,21 @@ const RecipeGui = ({
         }
       `)
       // eslint-disable-next-line
-      const [__, sendEvent] = useMutation(`
-        mutation($event: String!) {
-          sendEvent(event: $event)
+      const [__, _sendEvent] = useMutation(`
+        mutation($event: String!, $input: String) {
+          sendEvent(event: $event, input: $input)
         }
       `)
+
+      const sendEvent = ({ event, input }) => {
+        if (input) {
+          return _sendEvent({
+            event,
+            input: JSON.stringify(input),
+          })
+        }
+        _sendEvent({ event })
+      }
 
       subscriptionClient.connectionCallback = async () => {
         if (!showRecipesList) {
@@ -305,6 +309,25 @@ const RecipeGui = ({
 
       if (state.value === `doneError`) {
         console.error(state)
+      }
+
+      if (state.value === `waitingForInput`) {
+        const { input } = state.context
+        const props = state.context.input.props
+        const addNewProps = key => e => {
+          const newProps = { ...props, [key]: e.target.value }
+          sendEvent({ event: `SEND_INPUT`, input: { ...input, newProps } })
+        }
+        return (
+          <>
+            {Object.entries(props).map(([key, value]) => (
+              <label>
+                {key}
+                <input value={value} onChange={addNewProps(key)} />
+              </label>
+            ))}
+          </>
+        )
       }
 
       log(`state`, state)
@@ -412,84 +435,6 @@ const RecipeGui = ({
                 ))}
               </div>
             )}
-          </div>
-        )
-      }
-
-      const PresentStep = ({ step }) => {
-        // const isPlan = state.context.plan && state.context.plan.length > 0
-        // const isPresetPlanState = state.value === `presentPlan`
-        // const isRunningStep = state.value === `applyingPlan`
-        // console.log(`PresentStep`, { isRunningStep, isPlan, isPresetPlanState })
-        // if (isRunningStep) {
-        // console.log("running step")
-        // return null
-        // }
-        // if (!isPlan || !isPresetPlanState) {
-        // return (
-        // <div margin-top={1}>
-        // <button onClick={() => sendEvent({ event: `CONTINUE` })}>
-        // Go!
-        // </button>
-        // </div>
-        // )
-        // }
-        //
-        // {plan.map((p, i) => (
-        // <div margin-top={1} key={`${p.resourceName} plan ${i}`}>
-        // <Styled.p>{p.resourceName}:</Styled.p>
-        // <Styled.p> * {p.describe}</Styled.p>
-        // {p.diff && p.diff !== `` && (
-        // <>
-        // <Styled.p>---</Styled.p>
-        // <pre
-        // sx={{
-        // lineHeight: 0.7,
-        // background: `#f5f3f2`,
-        // padding: [3],
-        // "& > span": {
-        // display: `block`,
-        // },
-        // }}
-        // dangerouslySetInnerHTML={{ __html: ansi2HTML(p.diff) }}
-        // />
-        // <Styled.p>---</Styled.p>
-        // </>
-        // )}
-        // </div>
-        // ))}
-        // <div margin-top={1}>
-        // <button onClick={() => sendEvent({ event: "CONTINUE" })}>
-        // Go!
-        // </button>
-        // </div>
-      }
-
-      const RunningStep = ({ state }) => {
-        const isPlan = state.context.plan && state.context.plan.length > 0
-        const isRunningStep = state.value === `applyingPlan`
-
-        if (!isPlan || !isRunningStep) {
-          return null
-        }
-
-        return (
-          <div>
-            {state.context.plan.map((p, i) => (
-              <div key={`${p.resourceName}-${i}`}>
-                <Styled.p>{p.resourceName}:</Styled.p>
-                <Styled.p>
-                  {` `}
-                  <Spinner /> {p.describe}
-                  {` `}
-                  {state.context.elapsed > 0 && (
-                    <Styled.p>
-                      ({state.context.elapsed / 1000}s elapsed)
-                    </Styled.p>
-                  )}
-                </Styled.p>
-              </div>
-            ))}
           </div>
         )
       }

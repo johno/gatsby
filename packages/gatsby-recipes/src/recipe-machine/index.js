@@ -1,11 +1,12 @@
-const { Machine, assign } = require(`xstate`)
+import { Machine, assign } from "xstate"
+import Debug from "debug"
 
-const debug = require(`debug`)(`recipes-machine`)
+import createPlan from "../create-plan"
+import applyPlan from "../apply-plan"
+import validateSteps from "../validate-steps"
+import parser from "../parser"
 
-const createPlan = require(`../create-plan`)
-const applyPlan = require(`../apply-plan`)
-const validateSteps = require(`../validate-steps`)
-const parser = require(`../parser`)
+const debug = Debug(`recipes-machine`)
 
 const recipeMachine = Machine(
   {
@@ -20,6 +21,7 @@ const recipeMachine = Machine(
       commands: [],
       stepResources: [],
       stepsAsMdx: [],
+      renderContext: {},
     },
     states: {
       parsingRecipe: {
@@ -145,7 +147,15 @@ const recipeMachine = Machine(
       },
       waitingForInput: {
         on: {
-          INPUT_CALLED: `validateSteps`,
+          INPUT_SENT: {
+            target: `validateSteps`,
+            actions: assign({
+              renderContext: (context, event) => {
+                console.log(JSON.stringify({ context, event }, null, 2))
+                return { hello: `world` }
+              },
+            }),
+          },
         },
       },
       presentPlan: {
@@ -247,9 +257,7 @@ const recipeMachine = Machine(
       }),
       addResourcesToContext: assign((context, event) => {
         if (event.data) {
-          const stepResources = context.stepResources || []
           let plan = context.plan || []
-          console.log(`------------------`, event.data)
           plan = plan.map(p => {
             let changedResource = event.data.find(c => c._uuid === p._uuid)
             if (!changedResource) return p
@@ -257,21 +265,13 @@ const recipeMachine = Machine(
             p.isDone = true
             return p
           })
-          console.log({ plan })
-          // const messages = event.data.map(e => {
-          // return {
-          // _message: e._message,
-          // _currentStep: context.currentStep,
-          // }
-          // })
-          return {
-            plan,
-          }
+          return { plan }
         }
         return undefined
       }),
     },
     guards: {
+      // XXX: Update this because it'll currently break the CLI
       hasNextStep: (context, event) => false,
       // false || context.currentStep < context.steps.length,
       atLastStep: (context, event) => true,

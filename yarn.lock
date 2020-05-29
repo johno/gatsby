@@ -3865,17 +3865,7 @@
     unist-builder "2.0.3"
     unist-util-visit "2.0.2"
 
-"@mdx-js/react@^1.5.2":
-  version "1.6.5"
-  resolved "https://registry.yarnpkg.com/@mdx-js/react/-/react-1.6.5.tgz#70380f25209b62ef69349b7eef09fad7e1103824"
-  integrity sha512-y1Yu9baw3KokFrs7g5RxHpJNSU4e1zk/5bAJX94yVATglG5HyAL0lYMySU8YzebXNE+fJJMCx9CuiQHy2ezoew==
-
-"@mdx-js/react@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@mdx-js/react/-/react-1.6.1.tgz#46e56602c1f513452db2f1f4185f56dc60a4fcb7"
-  integrity sha512-jXBSWdWFPK2fs3johKb0hQFsf/x/C24XQYQwMhj8FxwlBgf7+NGATwXFs6pGkKd5/JfK9HXmbOcQ78MYoIZyxA==
-
-"@mdx-js/react@^2.0.0-next.1":
+"@mdx-js/react@^1.5.2", "@mdx-js/react@^1.6.1", "@mdx-js/react@^2.0.0-next.1":
   version "2.0.0-next.1"
   resolved "https://registry.yarnpkg.com/@mdx-js/react/-/react-2.0.0-next.1.tgz#0274d3424fe6540a237037bd2ededd0b7688ed2d"
   integrity sha512-nnv4tGcfmSttIj5FoGuMB9d5q9LyYEo+dRdmb0y6GBr3TiVFNruHLBtsAQkOiztIejMuoOcRZSCMZTmsF2SbXA==
@@ -18326,6 +18316,11 @@ normalize-url@^4.1.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.3.0.tgz#9c49e10fc1876aeb76dba88bf1b2b5d9fa57b2ee"
   integrity sha512-0NLtR71o4k6GLP+mr6Ty34c5GA6CMoEsncKJxvQd8NzPxaHRJNnb5gZE8R1XF4CPIS7QPHLJ74IFszwtNVAHVQ==
+
+normalize.css@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-8.0.1.tgz#9b98a208738b9cc2634caacbc42d131c97487bf3"
+  integrity sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==
 
 normalizeurl@^1.0.0:
   version "1.0.0"

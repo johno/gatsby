@@ -85,7 +85,7 @@ describe(`recipe-machine`, () => {
     service.start()
   })
 
-  it(`stores created/changed/deleted resources on the context after applying plan`, done => {
+  it(`stores created/changed/deleted as part of the plan after applying`, done => {
     const filePath = `./hi.md`
     const filePath2 = `./hi2.md`
     const filePath3 = `./hi3.md`
@@ -118,10 +118,16 @@ describe(`recipe-machine`, () => {
         fs.unlinkSync(path.join(process.cwd(), filePath3))
 
         // XXX: Fix this, right now we're executing the full plan twice
-        //expect(state.context.stepResources).toHaveLength(3)
-        expect(state.context.stepResources).toMatchSnapshot()
-        expect(state.context.stepResources[0]._message).toBeTruthy()
-        expect(state.context.stepResources[0]._currentStep).toBeTruthy()
+        //expect(state.context.plan).toHaveLength(3)
+        expect(state.context.plan[0].resourceDefinitions).toMatchSnapshot()
+        expect(state.context.plan[0]._message).toBeTruthy()
+        expect(state.context.plan[0]._currentStep).toBeTruthy()
+        done()
+      }
+
+      if (state.value === `doneError`) {
+        console.log(state)
+        expect(true).toBeFalsy()
         done()
       }
     })
