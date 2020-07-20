@@ -144,8 +144,9 @@ const makeResourceId = res => {
 
 let sendEvent
 
-const PROJECT_ROOT = `/Users/kylemathews/programs/recipes-test` // &&
-//  `/Users/johno-mini/c/gatsby/starters/blog`
+const PROJECT_ROOT =
+  `/Users/kylemathews/programs/recipes-test` &&
+  `/Users/johno-mini/c/gatsby/starters/blog`
 
 const Color = `span`
 const Spinner = () => <span>Loading...</span>
@@ -353,7 +354,7 @@ const removeJsx = () => tree => {
   return tree
 }
 
-const recipe = `./test.mdx`
+const recipe = `./file-test.mdx`
 // recipe = `jest.mdx`,
 // recipe,
 const graphqlPort = 50400

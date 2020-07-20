@@ -5,7 +5,7 @@ import { mdx as createElement, MDXProvider } from "@mdx-js/react"
 import babelPluginTransformReactJsx from "@babel/plugin-transform-react-jsx"
 const babelPluginCopyKeyProp = require(`../renderer/babel-plugin-copy-key-prop`)
 const babelPluginMoveExportKeywords = require(`../renderer/babel-plugin-move-export-keywords`)
-const { useInputByKey } = require(`../renderer/input-provider`)
+const { useInput, useInputByKey } = require(`../renderer/input-provider`)
 const { useResource } = require(`../renderer/resource-provider`)
 const { useProvider } = require(`../renderer/provider-provider`)
 
@@ -38,6 +38,7 @@ export default ({ children: mdxSrc, scope, components, ...props }) => {
     React,
     components,
     props,
+    useInput,
     useInputByKey,
     useResource,
     useProvider,
