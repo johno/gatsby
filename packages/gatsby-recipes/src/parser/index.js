@@ -1,16 +1,15 @@
-const unified = require(`unified`)
-const remarkMdx = require(`remark-mdx`)
-const remarkMdxjs = require(`remark-mdxjs`)
-const remarkParse = require(`remark-parse`)
-const remarkStringify = require(`remark-stringify`)
-const fetch = require(`node-fetch`)
-const fs = require(`fs-extra`)
-const isUrl = require(`is-url`)
-const path = require(`path`)
-const visit = require(`unist-util-visit`)
-const remove = require(`unist-util-remove`)
-
-const { uuid } = require(`./util`)
+import unified from "unified"
+import remarkMdx from "remark-mdx"
+import remarkMdxjs from "remark-mdxjs"
+import remarkParse from "remark-parse"
+import remarkStringify from "remark-stringify"
+import fetch from "node-fetch"
+import fs from "fs-extra"
+import isUrl from "is-url"
+import path from "path"
+import visit from "unist-util-visit"
+import remove from "unist-util-remove"
+import { v4 as uuid } from "uuid"
 
 const IGNORED_COMPONENTS = [`RecipeIntroduction`, `RecipeStep`]
 
@@ -169,7 +168,7 @@ const getSource = async (pathOrUrl, projectRoot) => {
   return src
 }
 
-module.exports = async (recipePath, projectRoot) => {
+const parser = async (recipePath, projectRoot) => {
   const src = await getSource(recipePath, projectRoot)
   try {
     const result = await parse(src)
@@ -180,5 +179,5 @@ module.exports = async (recipePath, projectRoot) => {
   }
 }
 
-module.exports.parse = parse
-module.exports.u = u
+export default parser
+export { parse, u }

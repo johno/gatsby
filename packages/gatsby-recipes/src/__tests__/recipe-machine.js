@@ -2,7 +2,7 @@ const { interpret } = require(`xstate`)
 const fs = require(`fs-extra`)
 const path = require(`path`)
 
-const recipeMachine = require(`.`)
+const recipeMachine = require(`../recipe-machine`)
 
 describe(`recipe-machine`, () => {
   it(`creates empty plan when the step has no resources`, done => {

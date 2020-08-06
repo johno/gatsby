@@ -1,6 +1,6 @@
 const { interpret } = require(`xstate`)
 
-const recipeMachine = require(`.`)
+const recipeMachine = require(`../recipe-machine`)
 
 describe(`recipe-machine errors`, () => {
   it(`errors if part of the recipe fails schema validation`, done => {

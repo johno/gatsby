@@ -1,7 +1,7 @@
-const fs = require(`fs-extra`)
-const path = require(`path`)
+import fs from "fs-extra"
+import path from "path"
 
-const parser = require(`.`)
+import parser, { parse } from ".."
 
 const fixturePath = path.join(__dirname, `fixtures/prettier-git-hook.mdx`)
 const fixtureSrc = fs.readFileSync(fixturePath, `utf8`)
@@ -34,7 +34,7 @@ test(`raises an error when the recipe isn't known`, async () => {
 })
 
 test(`partitions the MDX into steps`, async () => {
-  const result = await parser.parse(fixtureSrc)
+  const result = await parse(fixtureSrc)
 
   expect(result.stepsAsMdx[0]).toMatch(
     `# Automatically run Prettier on Git commits`
@@ -46,7 +46,7 @@ test(`partitions the MDX into steps`, async () => {
 
 test(`raises an error if JSX doesn't parse`, async () => {
   try {
-    await parser.parse(`# Hello, world!
+    await parse(`# Hello, world!
 ---
 <NPMScript name="foo" command="bar" /
 `)

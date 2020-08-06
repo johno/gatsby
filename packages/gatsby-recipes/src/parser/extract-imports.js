@@ -1,33 +1,8 @@
-const { declare } = require(`@babel/helper-plugin-utils`)
-const babel = require(`@babel/standalone`)
+import babel from '@babel/standalone'
 
-class BabelPluginExtractImportNames {
-  constructor() {
-    const names = {}
-    this.state = names
+import BabelPluginExtractImportNames from '../babel-plugins/extract-import-names'
 
-    this.plugin = declare(api => {
-      api.assertVersion(7)
-
-      return {
-        visitor: {
-          ImportDeclaration(path) {
-            const source = path.node.source.value
-            path.traverse({
-              Identifier(path) {
-                if (path.key === `local`) {
-                  names[path.node.name] = source
-                }
-              },
-            })
-          },
-        },
-      }
-    })
-  }
-}
-
-module.exports = src => {
+function extractImports (src) {
   try {
     const plugin = new BabelPluginExtractImportNames()
     babel.transform(src, {
@@ -41,4 +16,4 @@ module.exports = src => {
   }
 }
 
-module.exports.BabelPluginExtractImportNames = BabelPluginExtractImportNames
+export default extractImports

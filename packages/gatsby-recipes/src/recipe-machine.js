@@ -1,11 +1,12 @@
 const { Machine, assign, send } = require(`xstate`)
 
-const debug = require(`debug`)(`recipes-machine`)
+const debug = require(`debug`)(`recipe-machine`)
 
-const createPlan = require(`../create-plan`)
-const applyPlan = require(`../apply-plan`)
-const validateSteps = require(`../validate-steps`)
-const parser = require(`../parser`)
+const createPlan = require(`./create-plan`)
+const applyPlan = require(`./apply-plan`)
+const validateSteps = require(`./validate-steps`)
+const parser = require(`./parser`).default
+const { parse } = require(`./parser`)
 
 const recipeMachine = Machine(
   {
@@ -34,7 +35,7 @@ const recipeMachine = Machine(
             debug(`parsingRecipe`)
 
             if (context.src) {
-              parsed = await parser.parse(context.src)
+              parsed = await parse(context.src)
             } else if (context.recipePath && context.projectRoot) {
               parsed = await parser(context.recipePath, context.projectRoot)
             } else {
