@@ -1,0 +1,20 @@
+# Hello, world!
+
+---
+
+export const val = useInputByKey('hello-content')
+export const path = 'hello'
+
+Write a hello file with "{val}".
+
+<Input
+  type="text"
+  label="Content"
+  key="hello-content"
+/>
+
+<File path={path} content={val} />
+
+---
+
+That's it, we did it! We wrote "{val}" to <code>{path}</code>!

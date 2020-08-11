@@ -161,6 +161,7 @@ const recipeMachine = Machine(
           id: `presentingPlan`,
           src: (context, event) => (cb, onReceive) => {
             onReceive(async e => {
+              console.log(e)
               context.inputs = context.inputs || {}
               context.inputs[e.data.key] = e.data
               const result = await createPlan(context, cb)

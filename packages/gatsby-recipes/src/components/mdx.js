@@ -28,6 +28,7 @@ export default ({ children: mdxSrc, scope, components, ...props }) => {
   const scopeValues = Object.values(fullScope)
 
   const srcCode = transformRecipeMDX(mdxSrc)
+  console.log({ mdxSrc, srcCode })
 
   const fn = new Function(...scopeKeys, transformCodeForEval(srcCode))
 

@@ -7,11 +7,11 @@ const { useState } = require(`react`)
 const ansi2HTML = require(`ansi-html`)
 const remove = require(`unist-util-remove`)
 const { Global } = require(`@emotion/core`)
-// const ws = require(`ws`)
 const fetch = require(`isomorphic-fetch`)
 import { MdRefresh, MdBrightness1 } from "react-icons/md"
 import { keyframes } from "@emotion/core"
 import MDX from "./components/mdx"
+import { useInputByKey } from "./renderer/input-provider"
 
 const {
   Button,
@@ -49,85 +49,6 @@ ansi2HTML.setColors({
   green: theme.tones.SUCCESS.medium.slice(1),
   yellow: theme.tones.WARNING.medium.slice(1),
 })
-
-// const InputFieldBlock = React.forwardRef((props, ref) => {
-// const {
-// id,
-// label,
-// labelSize,
-// error,
-// hint,
-// className,
-// validationMode,
-// layout,
-// ...rest
-// } = props
-
-// const hasError = false
-
-// return (
-// <FormFieldContainer
-// layout={layout}
-// className={className}
-// sx={{ fontFamily: theme.fonts.body }}
-// >
-// <InputField id={id} hasError={!!error} hasHint={!!hint}>
-// <InputFieldLabel size={labelSize} isRequired={!!rest.required}>
-// {label}
-// </InputFieldLabel>
-// <input
-// type="text"
-// ref={ref}
-// {...rest}
-// sx={{
-// border: hasError
-// ? `1px solid ${theme.colors.red[60]}`
-// : `2px solid ${theme.tones.BRAND.dark}`,
-// background: theme.colors.white,
-// borderRadius: theme.radii[2],
-// color: theme.colors.grey[90],
-// fontFamily: theme.fonts.system,
-// fontSize: theme.fontSizes[2],
-// height: `2.25rem`,
-// padding: `0 ${theme.space[3]}`,
-// position: `relative`,
-// width: `66%`,
-// zIndex: 1,
-// WebkitAppearance: `none`,
-
-// ":focus": {
-// outline: `0`,
-// transition: `box-shadow 0.15s ease-in-out`,
-// boxShadow: `0 0 0 3px ${
-// hasError ? theme.colors.red[10] : theme.colors.purple[20]
-// }`,
-// borderColor: hasError
-// ? theme.colors.red[30]
-// : theme.colors.purple[60],
-// },
-
-// ":disabled": {
-// background: theme.colors.grey[10],
-// cursor: `not-allowed`,
-// },
-
-// "&:disabled::placeholder": {
-// color: theme.colors.grey[40],
-// },
-
-// "&::placeholder": {
-// color: theme.colors.grey[50],
-// },
-// }}
-// />
-// <InputFieldHint>{hint}</InputFieldHint>
-// <InputFieldError validationMode={validationMode}>
-// {error}
-// </InputFieldError>
-// </InputField>
-// </FormFieldContainer>
-// )
-// })
 
 const makeResourceId = res => {
   if (!res.describe) {
@@ -325,7 +246,26 @@ const components = {
   NPMPackageJson: () => null,
   NPMPackage: () => null,
   File: () => null,
-  Input: () => null,
+  Input: ({ label, type = `text`, _key: key, ...rest }) => {
+    const value = useInputByKey(key)
+
+    return (
+      <div sx={{ pt: 3, width: `30%`, maxWidth: `100%` }}>
+        <InputField sx={{ pt: 3 }}>
+          <div>
+            <InputFieldLabel>{label}</InputFieldLabel>
+          </div>
+          <InputFieldControl
+            type={type}
+            value={value}
+            onInput={e => {
+              sendInputEvent({ key, value: e.target.value })
+            }}
+          />
+        </InputField>
+      </div>
+    )
+  },
   Directory: () => null,
   GatsbyShadowFile: () => null,
   NPMScript: () => null,
@@ -350,7 +290,7 @@ const removeJsx = () => tree => {
   return tree
 }
 
-const recipe = `styled-components.mdx`
+const recipe = `./foo.mdx`
 // recipe = `jest.mdx`,
 // recipe,
 const graphqlPort = 50400
@@ -426,6 +366,9 @@ const Step = ({ state, step, i }) => {
     p => parseInt(p._stepMetadata.step, 10) === i + 1
   )
 
+  const exportsAsMdx = state.context.exports?.map(e => e.value).join(`\n`) || ``
+  const fullStepMdx = exportsAsMdx + `\n\n` + step
+
   return (
     <div
       key={`step-${i}`}
@@ -482,7 +425,7 @@ const Step = ({ state, step, i }) => {
             scope={{ sendEvent }}
             remarkPlugins={[removeJsx]}
           >
-            {state.context.exports?.join(`\n`) + `\n\n` + step}
+            {fullStepMdx}
           </MDX>
         </div>
       </div>
